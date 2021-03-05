@@ -20,6 +20,7 @@ Feather.loadFont();
 MaterialCommunityIcons.loadFont();
 
 export default Home = ({ navigation }) => {
+
   const renderCategoryItem = ({ item }) => {
     return (
       <View
@@ -89,6 +90,7 @@ export default Home = ({ navigation }) => {
               renderItem={renderCategoryItem}
               keyExtractor={(item) => item.id}
               horizontal={true}
+              showsVerticalScrollIndicator={false}
             />
           </View>
         </View>
@@ -188,6 +190,8 @@ const styles = StyleSheet.create({
     color: colors.textDark,
     marginTop: 5,
   },
+
+
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5CA48',
     marginRight: 20,
     borderRadius: 20,
-    shadowColor: colors.black,
+    shadowColor: "red",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -237,6 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     alignSelf: 'center',
     marginHorizontal: 20,
+
   },
   categoryItemTitle: {
     textAlign: 'center',
@@ -333,5 +338,6 @@ const styles = StyleSheet.create({
     width: 210,
     height: 125,
     resizeMode: 'contain',
+
   },
 });
