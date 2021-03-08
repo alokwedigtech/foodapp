@@ -9,12 +9,15 @@ import {
   Image,
   FlatList,
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../assets/colors/colors';
 
 export default Details = ({ route, navigation }) => {
+
   const { item } = route.params;
+
 
   const renderIngredientsItem = ({ item }) => {
     return (
@@ -32,78 +35,83 @@ export default Details = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <SafeAreaView>
-        <View style={styles.headerWrapper}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <View style={styles.headerLeft}>
-              <Feather name="chevron-left" size={12} color={colors.textDark} />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <SafeAreaView>
+          <View style={styles.headerWrapper}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <View style={styles.headerLeft}>
+                <Feather name="chevron-left" size={12} color={colors.textDark} />
+              </View>
+            </TouchableOpacity>
+            <View style={styles.headerRight}>
+              <Text style={{ color: '#000' }}>{item.rating}</Text>
+              <MaterialCommunityIcons
+                name="star"
+                size={12}
+                color={colors.black}
+              />
             </View>
-          </TouchableOpacity>
-          <View style={styles.headerRight}>
-            <MaterialCommunityIcons
-              name="star"
-              size={12}
-              color={colors.white}
+          </View>
+        </SafeAreaView>
+
+        {/* Titles */}
+        <View style={styles.titlesWrapper}>
+          <Text style={styles.title}>{item.title}</Text>
+        </View>
+
+        {/* Price */}
+        <View style={styles.priceWrapper}>
+          <Text style={styles.priceText}>${item.price}</Text>
+        </View>
+
+        {/* Pizza info */}
+        <View style={styles.infoWrapper}>
+          <View style={styles.infoLeftWrapper}>
+            <View style={styles.infoItemWrapper}>
+              <Text style={styles.infoItemTitle}>Size</Text>
+              <Text style={styles.infoItemText}>
+                {item.sizeName} {item.sizeNumber}"
+            </Text>
+            </View>
+            <View style={styles.infoItemWrapper}>
+              <Text style={styles.infoItemTitle}>Crust</Text>
+              <Text style={styles.infoItemText}>{item.crust}</Text>
+            </View>
+            <View style={styles.infoItemWrapper}>
+              <Text style={styles.infoItemTitle}>Delivery in</Text>
+              <Text style={styles.infoItemText}>{item.deliveryTime} min</Text>
+            </View>
+          </View>
+          <View>
+            <Image source={item.image} style={styles.itemImage} />
+          </View>
+        </View>
+
+        {/* Ingredients */}
+        <View style={styles.ingredientsWrapper}>
+          <Text style={styles.ingredientsTitle}>Ingredients</Text>
+          <View style={styles.ingredientsListWrapper}>
+            <FlatList
+              data={item.ingredients}
+              renderItem={renderIngredientsItem}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
             />
           </View>
         </View>
-      </SafeAreaView>
 
-      {/* Titles */}
-      <View style={styles.titlesWrapper}>
-        <Text style={styles.title}>{item.title}</Text>
-      </View>
-
-      {/* Price */}
-      <View style={styles.priceWrapper}>
-        <Text style={styles.priceText}>${item.price}</Text>
-      </View>
-
-      {/* Pizza info */}
-      <View style={styles.infoWrapper}>
-        <View style={styles.infoLeftWrapper}>
-          <View style={styles.infoItemWrapper}>
-            <Text style={styles.infoItemTitle}>Size</Text>
-            <Text style={styles.infoItemText}>
-              {item.sizeName} {item.sizeNumber}"
-            </Text>
+        {/* Place an order */}
+        <TouchableOpacity onPress={() => alert('Your order has been placed!')}>
+          <View style={styles.orderWrapper}>
+            <Text style={styles.orderText}>Place an order</Text>
+            <Feather name="chevron-right" size={18} color={colors.black} />
           </View>
-          <View style={styles.infoItemWrapper}>
-            <Text style={styles.infoItemTitle}>Crust</Text>
-            <Text style={styles.infoItemText}>{item.crust}</Text>
-          </View>
-          <View style={styles.infoItemWrapper}>
-            <Text style={styles.infoItemTitle}>Delivery in</Text>
-            <Text style={styles.infoItemText}>{item.deliveryTime} min</Text>
-          </View>
-        </View>
-        <View>
-          <Image source={item.image} style={styles.itemImage} />
-        </View>
-      </View>
-
-      {/* Ingredients */}
-      <View style={styles.ingredientsWrapper}>
-        <Text style={styles.ingredientsTitle}>Ingredients</Text>
-        <View style={styles.ingredientsListWrapper}>
-          <FlatList
-            data={item.ingredients}
-            renderItem={renderIngredientsItem}
-            keyExtractor={(item) => item.id}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      </View>
-
-      {/* Place an order */}
-      <TouchableOpacity onPress={() => alert('Your order has been placed!')}>
-        <View style={styles.orderWrapper}>
-          <Text style={styles.orderText}>Place an order</Text>
-          <Feather name="chevron-right" size={18} color={colors.black} />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -117,7 +125,7 @@ const styles = new StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 10,
   },
   headerLeft: {
     borderColor: colors.textLight,
@@ -131,6 +139,8 @@ const styles = new StyleSheet.create({
     borderRadius: 10,
     borderColor: colors.primary,
     borderWidth: 2,
+    flexDirection: 'row',
+    alignContent: 'center'
   },
   titlesWrapper: {
     paddingHorizontal: 20,
@@ -140,19 +150,19 @@ const styles = new StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
     fontSize: 32,
     color: colors.textDark,
-    width: '50%',
+    width: '100%',
   },
   priceWrapper: {
-    marginTop: 20,
+    marginTop: 5,
     paddingHorizontal: 20,
   },
   priceText: {
     color: colors.price,
     fontFamily: 'Montserrat-Bold',
-    fontSize: 32,
+    fontSize: 25,
   },
   infoWrapper: {
-    marginTop: 60,
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -161,7 +171,7 @@ const styles = new StyleSheet.create({
     paddingLeft: 20,
   },
   infoItemWrapper: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   infoItemTitle: {
     fontFamily: 'Montserrat-Medium',
@@ -178,7 +188,7 @@ const styles = new StyleSheet.create({
     marginLeft: 50,
   },
   ingredientsWrapper: {
-    marginTop: 40,
+    marginTop: 15,
   },
   ingredientsTitle: {
     paddingHorizontal: 20,
@@ -209,7 +219,7 @@ const styles = new StyleSheet.create({
     resizeMode: 'contain',
   },
   orderWrapper: {
-    marginTop: 60,
+    marginTop: 15,
     marginHorizontal: 20,
     backgroundColor: colors.primary,
     borderRadius: 50,

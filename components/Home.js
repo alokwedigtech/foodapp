@@ -338,6 +338,5 @@ const styles = StyleSheet.create({
     width: 210,
     height: 125,
     resizeMode: 'contain',
-
   },
 });
