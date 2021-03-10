@@ -16,11 +16,13 @@ const Fooddesign = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <FontAwesome
-                    name="arrow-left"
-                    size={20}
-                    color={"#57a7ff"}
-                />
+                <TouchableOpacity>
+                    <FontAwesome
+                        name="arrow-left"
+                        size={20}
+                        color={"#57a7ff"}
+                    />
+                </TouchableOpacity >
                 <TextInput
                     placeholder="Serach"
                     style={styles.globalsearch}
@@ -52,26 +54,31 @@ const Fooddesign = ({ navigation }) => {
                 </View>
 
                 <View style={styles.mainlocation}>
-                    <View style={styles.innerlocation}>
-                        <Ionicons
-                            name="md-stopwatch-outline"
-                            size={20}
-                            color={"#57a7ff"}
-                        />
-                        <Text style={{ fontSize: 15, marginLeft: 9 }}>New </Text>
-                    </View>
+                    <TouchableOpacity onPress={() =>
+                        navigation.navigate('Elilogy')
+                    }>
+                        <View style={styles.innerlocation} >
+                            <Ionicons
+                                name="md-stopwatch-outline"
+                                size={20}
+                                color={"#57a7ff"}
 
-                    <View style={styles.innerlocation}>
-                        <Ionicons
-                            name="ios-location-outline"
-                            size={20}
-                            color={"#57a7ff"}
-                            onPress={() =>
-                                navigation.navigate('Userapi')
-                            }
-                        />
-                        <Text style={{ fontSize: 15, marginLeft: 9 }}>Mansarover  </Text>
-                    </View>
+                            />
+                            <Text style={{ fontSize: 15, marginLeft: 9 }}>Elilogy</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() =>
+                        navigation.navigate('Userapi')
+                    }>
+                        <View style={styles.innerlocation}>
+                            <Ionicons
+                                name="ios-location-outline"
+                                size={20}
+                                color={"#57a7ff"}
+                            />
+                            <Text style={{ fontSize: 15, marginLeft: 9 }}>Api data  </Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <Text style={styles.typeoffoodheading}>Favourite </Text>

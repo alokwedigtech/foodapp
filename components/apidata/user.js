@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { StyleSheet, Button, Image, FlatList, Text, View, SafeAreaView, Alert, TextInput, TouchableOpacity, ClippingRectangle } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign'
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ActivityIndicator, TextInput, Image, FlatList, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import FontAwesome from 'react-native-vector-icons/FontAwesome5'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../assets/colors/colors';
-import { useEffect } from 'react/cjs/react.development';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5'
+import EvilIcons from 'react-native-vector-icons/EvilIcons'
+
 
 const Userapi = ({ navigation }) => {
 
     const datashow = ({ item }) => {
-        console.log('item-------', item)
         return (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() =>
+                navigation.navigate('Userinfo', {
+                    item: item,
+                })
+            }>
                 <View style={styles.userdatalist}>
                     <Image
                         source={require('../../assets/images/profile.png')}
@@ -29,20 +30,50 @@ const Userapi = ({ navigation }) => {
         )
     }
 
-    const [userdata, setUserdata] = useState([])
+    const [search, setSearch] = useState('');
+    const [filteredDataSource, setFilteredDataSource] = useState([]);
+    const [masterDataSource, setMasterDataSource] = useState([]);
+    const [loader, setLoader] = useState(true)
 
     useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/users')
-            .then(response => response.json())
-            .then(json => {
-                console.log('Response=> ', JSON.stringify(json))
-                setUserdata(JSON.stringify(json))
+            .then((response) => response.json())
+            .then((responseJson) => {
+                setFilteredDataSource(responseJson);
+                setMasterDataSource(responseJson);
+                setLoader(false)
             })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
+
+    const searchFilterFunction = (text) => {
+        // Check if searched text is not blank
+        if (text) {
+            // Inserted text is not blank
+            // Filter the masterDataSource and update FilteredDataSource
+            const newData = masterDataSource.filter(function (item) {
+                // Applying filter for the inserted text in search bar
+                const itemData = item.name
+                    ? item.name
+                    : '';
+                const textData = text;
+                return itemData.indexOf(textData) > -1;
+            });
+            setFilteredDataSource(newData);
+            setSearch(text);
+        } else {
+            // Inserted text is blank
+            // Update FilteredDataSource with masterDataSource
+            setFilteredDataSource(masterDataSource);
+            setSearch(text);
+        }
+    };
 
     return (
         <View style={styles.container}>
-            {console.log(userdata)}
+
             <SafeAreaView>
                 <View style={styles.headerWrapper}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -50,67 +81,40 @@ const Userapi = ({ navigation }) => {
                             <Feather name="chevron-left" size={12} color={colors.textDark} />
                         </View>
                     </TouchableOpacity>
-
                 </View>
             </SafeAreaView>
-            <Text style={styles.userlist}> User List</Text>
 
-            {/* <TouchableOpacity>
-                <View style={styles.userdatalist}>
-                    <Image
-                        source={require('../../assets/images/profile.png')}
-                        style={styles.profileImage}
-                    />
-                    <View>
-                    
-                        <Text style={styles.username}>alok</Text>
-                        <Text style={styles.useremail}>goyal</Text>
-                    </View>
-                    <Feather name="chevron-right" size={40} color={colors.textDark} />
-                </View >
-            </TouchableOpacity > */}
-            {/* 
+            <Text style={styles.userlist}> User List</Text>
+            <View style={styles.innersearch}>
+                <FontAwesome
+                    name="search"
+                    size={20}
+                    color={"#57a7ff"}
+                    style={{ marginLeft: 10 }}
+                />
+                <TextInput
+                    placeholder="Search by name"
+                    style={styles.internalsearch}
+                    onChangeText={(text) => searchFilterFunction(text)}
+                    value={search}
+                />
+                {/* <EvilIcons
+                    name="close"
+                    size={20}
+                    color={"#57a7ff"}
+                    style={{ marginLeft: 10 }}
+                    onPress={() => setSearch("")}
+                /> */}
+            </View>
+            <View>
+                {loader && <ActivityIndicator style={styles.loader} size={100} color="#000000" />}
+            </View>
             <FlatList
-                data={userdata}
-                keyExtractor={(item) => item.id}
-                renderItem={(item) => {
-                    console.log("item=> ", item.name)
-                    return (
-                        <TouchableOpacity>
-                            <View style={styles.userdatalist}>
-                                <Image
-                                    source={require('../../assets/images/profile.png')}
-                                    style={styles.profileImage}
-                                />
-                                <View>
-                                    <Text style={styles.username}>{item.name}</Text>
-                                    <Text style={styles.useremail}>{item.email}</Text>
-                                </View>
-                                <Feather name="chevron-right" size={40} color={colors.textDark} />
-                            </View>
-                        </TouchableOpacity>
-                    );
-                }}
-            /> */}
-            {userdata && userdata.map((res) => {
-                // console.log("res-----", res)
-                return (
-                    <TouchableOpacity>
-                        <View style={styles.userdatalist}>
-                            <Image
-                                source={require('../../assets/images/profile.png')}
-                                style={styles.profileImage}
-                            />
-                            <View>
-                                <Text style={styles.username}>{res.name}</Text>
-                                <Text style={styles.useremail}>{res.email}</Text>
-                            </View>
-                            <Feather name="chevron-right" size={40} color={colors.textDark} />
-                        </View>
-                    </TouchableOpacity>
-                )
-            })}
-        </View >
+                data={filteredDataSource}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={datashow}
+            />
+        </View>
     );
 }
 
@@ -119,15 +123,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     headerWrapper: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        // alignItems: 'center',+
         paddingHorizontal: 20,
         paddingTop: 10,
+        // borderBottomColor: "#000",
+        // width: 2
+
     },
     headerLeft: {
         borderColor: colors.textLight,
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     userlist: {
-        marginTop: 25,
+        marginTop: 5,
         fontSize: 25,
         fontWeight: 'bold',
         alignSelf: 'center'
@@ -146,7 +151,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         flexDirection: 'row',
         marginTop: 20,
-        // paddingHorizontal: 50,
         justifyContent: 'space-between',
         shadowColor: "#FFF",
         shadowOffset: {
@@ -170,6 +174,23 @@ const styles = StyleSheet.create({
     },
     useremail: {
         color: '#403f3f'
-    }
+    },
+    loader: {
+        alignItems: 'center',
+        marginTop: 100,
+        alignItems: 'center'
+    },
+    internalsearch: {
+        marginLeft: 20,
+        color: '#aeb0b5'
+    },
+    innersearch: {
+        marginBottom: 20,
+        backgroundColor: '#ffffff',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 10,
+        // justifyContent: 'space-between'
+    },
 });
 export default Userapi
